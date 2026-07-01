@@ -12,13 +12,9 @@ export default function InstallRequestsAdmin() {
     error: "",
   });
 
-<<<<<<< Updated upstream
-  // 1) Load pending requests (now enriched by backend)
-=======
   const token = localStorage.getItem("token");
 
-  // 1) Load pending requests + enrich with plan details
->>>>>>> Stashed changes
+  // 1) Load pending requests (now enriched by backend)
   useEffect(() => {
     async function loadRequests() {
       try {
@@ -27,35 +23,7 @@ export default function InstallRequestsAdmin() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const reqs = await res.json();
-<<<<<<< Updated upstream
         setRequests(reqs);
-=======
-
-        // get unique planIds
-        const planIds = [...new Set(reqs.map((r) => r.planId))];
-        // fetch each plan
-        const plans = await Promise.all(
-          planIds.map((id) =>
-            fetch(`https://localhost:44325/plans/${id}`, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
-          )
-        );
-        const planMap = {};
-        plans.forEach((p) => {
-          planMap[p.id] = {
-            name: p.name,
-            ipCount: p.public_ip_count,
-          };
-        });
-
-        // merge
-        const enriched = reqs.map((r) => ({
-          ...r,
-          planName: planMap[r.planId]?.name || "Unknown",
-          ipCount: planMap[r.planId]?.ipCount || 0,
-        }));
-
-        setRequests(enriched);
->>>>>>> Stashed changes
       } catch (e) {
         console.error("Error loading requests", e);
       }
@@ -176,8 +144,7 @@ export default function InstallRequestsAdmin() {
                 {/* now show the name, not userId */}
                 <td className="px-6 py-4">{r.requesterName}</td>
                 <td className="px-6 py-4">{r.location}</td>
-                {/* now show plan name, not planId */}
-                <td className="px-6 py-4">{r.planName}</td>
+                <td className="px-6 py-4">{r.planId}</td>
                 <td className="px-6 py-4">{r.planName}</td>
                 <td className="px-6 py-4">{r.publicIpCount}</td>
                 <td className="px-6 py-4">

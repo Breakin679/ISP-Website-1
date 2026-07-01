@@ -63,75 +63,7 @@ export default function ManageSubscription({ locData = {}, subsOptions = {} }) {
     setAddModal({ isOpen: true, installType: type, planId });
   const closeAdd = () =>
     setAddModal({ isOpen: false, installType: "", planId: null });
-<<<<<<< Updated upstream
-  const handleAdd = (installData) => {
-    const { planId } = addModal;
-    fetch("https://localhost:44325/subscriptions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
-      },
-      body: JSON.stringify({ userId, planId, serverId: installData.location }),
-=======
 
-  // ■■■ Updated openChange: fetch same-type plans on demand ■■■
-  const openChange = (sub) => {
-    console.log("sub:", sub);
-    const typeId = sub.planTypeId;
-    fetch(`https://localhost:44325/plans/type/${typeId}`, {
-      headers: { Authorization: `Bearer ${token}` },
->>>>>>> Stashed changes
-    })
-      .then((r) => {
-        if (!r.ok) throw new Error();
-        return r.json();
-      })
-      .then((newSub) =>
-        setSubs((s) => [
-          ...s,
-          { ...newSub, subscriptionKey: newSub.subscriptionKey || "" },
-        ])
-      )
-      .catch(() => setStatusMsg("Failed to add subscription."))
-      .finally(closeAdd);
-  };
-
-  // Change plan
-const openChange = (sub) => {
-  const planTypeId = sub.planTypeId;
-  if (!planTypeId) {
-    setStatusMsg("Plan type ID not available for this subscription.");
-    return;
-  }
-  fetch(`https://localhost:44325/plans/type/${planTypeId}`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-  })
-    .then((r) => {
-      if (!r.ok) throw new Error();
-      return r.json();
-    })
-    .then((list) =>
-      setChangeModal({
-        isOpen: true,
-        subscription: sub,
-        plans: list,
-        selectedPlanId: null,
-      })
-    )
-    .catch(() => setStatusMsg("Failed to load plans for change."));
-};
-  const closeChange = () =>
-    setChangeModal({
-      isOpen: false,
-      subscription: null,
-      plans: [],
-      selectedPlanId: null,
-    });
-<<<<<<< Updated upstream
-=======
-
-  // Add handler
   const handleAdd = (installData) => {
     const { planId } = addModal;
     const payload = { userId, planId, serverId: installData.location };
@@ -147,13 +79,48 @@ const openChange = (sub) => {
         if (!r.ok) throw new Error();
         return r.json();
       })
-      .then((newSub) => setSubs((s) => [...s, newSub]))
+      .then((newSub) =>
+        setSubs((s) => [
+          ...s,
+          { ...newSub, subscriptionKey: newSub.subscriptionKey || "" },
+        ])
+      )
       .catch(() => setStatusMsg("Failed to add subscription."))
       .finally(closeAdd);
   };
 
-  // Change handler
->>>>>>> Stashed changes
+  const openChange = (sub) => {
+    const planTypeId = sub.planTypeId;
+    if (!planTypeId) {
+      setStatusMsg("Plan type ID not available for this subscription.");
+      return;
+    }
+    fetch(`https://localhost:44325/plans/type/${planTypeId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error();
+        return r.json();
+      })
+      .then((list) =>
+        setChangeModal({
+          isOpen: true,
+          subscription: sub,
+          plans: list,
+          selectedPlanId: null,
+        })
+      )
+      .catch(() => setStatusMsg("Failed to load plans for change."));
+  };
+
+  const closeChange = () =>
+    setChangeModal({
+      isOpen: false,
+      subscription: null,
+      plans: [],
+      selectedPlanId: null,
+    });
+
   const handleChange = () => {
     const { subscription, selectedPlanId } = changeModal;
     fetch(
@@ -205,7 +172,7 @@ const openChange = (sub) => {
     try {
       const res = await fetch(
         `https://localhost:44325/subscriptions/${subscriptionId}/generate-key`,
-        { method: "POST", headers: { Authorization: `Bearer ${jwt}` } }
+        { method: "POST", headers: { Authorization: `Bearer ${token}` } }
       );
       if (!res.ok) throw new Error();
       const { key } = await res.json();
@@ -231,7 +198,7 @@ const openChange = (sub) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ KeyHash: accessModal.key, UserId: userId }),
     })
